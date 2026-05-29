@@ -103,9 +103,8 @@ ZVSE2
 !!OW:R(CURRENT_PLAYER)/(RES_GOLD)/?(gold:y);
 !!UN:C4881872/(UNC_INT8)/?(secSkillLimit:y);
 !!FU(WOG_GetNumberOfSecSkills):P(CURRENT_HERO)/?(number:y);
-!!VR(skillsLeft:y):S(secSkillLimit)-(number);
 
-!!if&(number)<(skillsLeft);
+!!if&(number)<(secSkillLimit);
   !!if&i^simi_skill_%(x)%(y)%(z)%(heroId)^=0/i^simi_skill2_%(x)%(y)%(z)%(heroId)^=0;
     !!FU(simi_getSanctuarySkills):P?(skill:y)/?(skill2:y);
     !!VRi^simi_skill_%(x)%(y)%(z)%(heroId)^:S(skill);   !!VRi^simi_skill2_%(x)%(y)%(z)%(heroId)^:S(skill2);
