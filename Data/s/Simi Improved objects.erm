@@ -1,5 +1,6 @@
 ZVSE2
 
+!#DC(SIZEOF_HEROTYPE_STRUCT) =64;
 
 !?OB(OBJ_TAVERN);
 
@@ -255,8 +256,6 @@ ZVSE2
   !!en;
 !!en;
 
-!IF:L^skill1:%(skill1),L1:%(level1),/skill2:%(skill2),L2:%(level2)^;
-
 !?FU(simi_getDenSkills);
 !#VA(skill1:x) (skill2:x);
 
@@ -284,8 +283,6 @@ ZVSE2
 
 !!SN:M(basicSkills)/?(basicSize:y) M(advSkills)/?(advSize:y);
 
-!IF:L^sizeBasic%(basicSize),adv%(advSize)^;
-
 !!if&(basicSize)>0;
   !!FU(Array_Pop):P(basicSkills)/?(skill1);
 !!el&(advSize)>0;
@@ -299,8 +296,6 @@ ZVSE2
 !!el&(advSize)>0;
   !!FU(Array_Pop):P(advSkills)/?(skill2);
 !!en;
-
-!IF:L^skill1:%(skill1),skill2:%(skill2)^;
 
 !?FU(OnAdventureMapTileHint);
 
@@ -354,6 +349,7 @@ ZVSE2
   !!VR(string):+^%(separator)%T(es.notVisited)^;
 !!en;
 !!VR(result):Z(string);
+
 
 !?FU(shimy_HeroClass_SkillLearnability);
 !#VA(classId:x) (skillId:x) (chance:x);
