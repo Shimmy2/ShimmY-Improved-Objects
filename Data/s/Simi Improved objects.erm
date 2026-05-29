@@ -355,3 +355,19 @@ ZVSE2
 !!en;
 !!VR(result):Z(string);
 
+!?FU(shimy_HeroClass_SkillLearnability);
+!#VA(classId:x) (skillId:x) (chance:x);
+  // Get HeroTypesTable from its ptr at 0x67DCEC/4/?(typesTable:y);
+  !!UN:C6806764/4/?(typesTable:y);
+
+  // get array offset for each heroType
+  !!VR(avalaiabilityOffset:y):S(classId) *(SIZEOF_HEROTYPE_STRUCT) + 24 +(skillId);
+
+  // set value 10 for the all skills idk how you plan to calculate that - mb add 1?
+  !!FU:S(@chance)/?(argSyntax:y);
+  !!if&(argSyntax)=(ARG_SYNTAX_SET);
+    !!UN:C(typesTable)/(avalaiabilityOffset)/-1/(chance:x);
+
+  !!el&(argSyntax)=(ARG_SYNTAX_GET);
+    !!UN:C(typesTable)/(avalaiabilityOffset)/-1/?(chance:x);
+  !!en;
