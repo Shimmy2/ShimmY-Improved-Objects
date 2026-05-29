@@ -1,0 +1,357 @@
+ZVSE2
+
+
+!?OB(OBJ_TAVERN);
+
+!!OW:R(CURRENT_PLAYER)/(RES_GOLD)/?(gold:y);
+!!HE(CURRENT_HERO):N?(heroId:y) S(SKILL_WISDOM)/?(wisLvl:y);
+
+!!VR(x:y):Sv998; !!VR(y:y):Sv999; !!VR(z:y):Sv1000;
+
+!!FU&i^simi_visited_%(x)%(y)%(z)%(heroId)^=1:E;
+
+!!HE(heroId):A2/(ART_SPELL_BOOK)/d/?(spellBook:y);               [Check for Spell Book]
+!!if&(spellBook)=0;
+  !!if&(gold)<500;
+    !!IF&(ERM_FLAG_IS_HUMAN):M^%T(simi.tavern.noGold)^;
+    !!FU:E;
+  !!el;
+    !!if&(ERM_FLAG_IS_HUMAN);
+      !!IF:Q1/(PIC_TYPE_ART)/(ART_SPELL_BOOK)/(MSG_TYPE_QUESTION)/^%T(simi.tavern.book)^;
+      !!if&1;  
+        !!OW:R(CURRENT_PLAYER)/(RES_GOLD)/d-500;
+        !!HE(heroId):A4/(ART_SPELL_BOOK);  
+      !!el;
+        !!FU:E;  
+      !!en;
+    !!el;
+      !!OW:R(CURRENT_PLAYER)/(RES_GOLD)/d-500;
+      !!HE(heroId):A4/(ART_SPELL_BOOK);  
+    !!en;
+  !!en;
+!!en;  
+
+!!VR(wisLvl):+2 F2/4;
+!!FU(simi_GenerateRandomSpell):P2/(wisLvl)/(heroId)/?(spell1:y)/?(spell2:y); [Function to generate a random level 2-4 spells which skips banned spells]
+
+!!if&(spell1)>=0/(spell2)>=0;  
+  !!IF&(ERM_FLAG_IS_HUMAN):Q1/(PIC_TYPE_SPELL)/(spell1)/(PIC_TYPE_SPELL)/(spell2)/(MSG_TYPE_MES)/^%T(simi.tavern.msg)^;
+  !!HE(heroId):M(spell1)/1 M(spell2)/1;               [Give Spells]
+  !!VRi^simi_visited_%(x)%(y)%(z)%(heroId)^:S1;
+!!el&(spell1)>=0; 
+  !!IF&(ERM_FLAG_IS_HUMAN):Q1/(PIC_TYPE_SPELL)/(spell1)/(MSG_TYPE_MES)/^%T(simi.tavern.msg)^;
+  !!HE(heroId):M(spell1)/1;                           [Give Spell]
+  !!VRi^simi_visited_%(x)%(y)%(z)%(heroId)^:S1;
+!!en;
+
+!?FU(simi_GenerateRandomSpell);
+!#VA(minLevel:x) (maxLevel:x) (hero:x) (spell:x) (spell2:x);
+
+!!VR(spell):S(NO_SPELL);
+!!VR(spell2):S(NO_SPELL);
+!!FU(NewIntArray):P?(spellList:y) P?(spellList2:y);
+
+!!re i/(SPELL_FIRST)/(SPELL_LAST_WOG);
+  !!HE(hero):M=i/1;
+
+  !!if&-1;
+    !!SSi:L?(level:y);
+
+    !!if&(level)>=(minLevel)/(level)<=(maxLevel);
+      !!UN:J0/i/?(isDisabled:y);
+      !!FU(Array_Push)&(isDisabled)<>(TRUE):P(spellList)/i;
+    !!en;
+  !!en;
+!!en;
+
+!!SN:M(spellList)/?(size:y);
+
+!!if&(size)=0;
+  !!FU:E;
+!!el;
+  !!VR(random:y):R0/1/(size) -1;
+  !!SN:M(spellList)/(random)/?(spell);
+!!en;
+
+!!VR(maxLevel):F2/3;
+!!re i/(SPELL_FIRST)/(SPELL_LAST_WOG);
+  !!HE(hero):M=i/1;
+
+  !!if&-1;
+    !!SSi:L?(level:y);
+    !!if&(level)>=(minLevel)/(level)<=(maxLevel);
+      !!UN:J0/i/?(isDisabled:y);
+      !!FU(Array_Push)&(isDisabled)<>(TRUE)/i<>(spell):P(spellList2)/i;
+    !!en;
+  !!en;
+!!en;
+
+!!SN:M(spellList2)/?(size2:y);
+
+!!if&(size2)>0;
+  !!VR(random:y):R0/1/(size2) -1;
+  !!SN:M(spellList2)/(random)/?(spell2);
+!!en;
+
+
+!?OB(OBJ_SANCTUARY);
+
+!!HE(CURRENT_HERO):N?(heroId:y) P?(x:y)/?(y:y)/?(z:y);
+!!FU|i^simi_visited_%(x)%(y)%(z)%(heroId)^=1/-(ERM_FLAG_IS_HUMAN):E;
+
+!!OW:R(CURRENT_PLAYER)/(RES_GOLD)/?(gold:y);
+!!UN:C4881872/(UNC_INT8)/?(secSkillLimit:y);
+!!FU(WOG_GetNumberOfSecSkills):P(CURRENT_HERO)/?(number:y);
+!!VR(skillsLeft:y):S(secSkillLimit)-(number);
+
+!!if&(number)<(skillsLeft);
+  !!if&i^simi_skill_%(x)%(y)%(z)%(heroId)^=0/i^simi_skill2_%(x)%(y)%(z)%(heroId)^=0;
+    !!FU(simi_getSanctuarySkills):P?(skill:y)/?(skill2:y);
+    !!VRi^simi_skill_%(x)%(y)%(z)%(heroId)^:S(skill);   !!VRi^simi_skill2_%(x)%(y)%(z)%(heroId)^:S(skill2);
+  !!el;
+    !!VR(skill):Si^simi_skill_%(x)%(y)%(z)%(heroId)^;   !!VR(skill2):Si^simi_skill2_%(x)%(y)%(z)%(heroId)^;
+    !!HE(CURRENT_HERO):S(skill)/?(level:y) S(skill2)/?(level2:y);
+    !!if&(level)>0;
+      !!re i/0/9;
+        !!FU(simi_getSanctuarySkills):P?(skill:y);
+        !!br&(skill)<>(skill2);
+      !!en;
+      !!VRi^simi_skill_%(x)%(y)%(z)%(heroId)^:S(skill);
+    !!en;
+    !!if&(level2)>0;
+      !!re i/0/9;
+        !!FU(simi_getSanctuarySkills):P?(skill2:y);
+        !!br&(skill2)<>(skill);
+      !!en;
+      !!VRi^simi_skill2_%(x)%(y)%(z)%(heroId)^:S(skill2);
+    !!en;
+  !!en;
+  !!VR(picSubtype:y):S(skill)*3 +3;   !!VR(picSubtype2:y):S(skill2)*3 +3;
+!!el;
+  !!IF:M^%T(simi.sanctuary.noSlot)^;
+  !!FU:E;
+!!en;
+
+!!IF:Q1/(PIC_TYPE_SEC_SKILL)/(picSubtype)/(PIC_TYPE_SEC_SKILL)/(picSubtype2)/(PIC_TYPE_RES_GOLD)/2000/(MSG_TYPE_CHOOSE_PIC_OR_CANCEL)/^%T(simi.sanctuary.msg)^;
+!!if&v1=1;    
+  !!if&(gold)>=2000;
+    !!OW:R(CURRENT_PLAYER)/(RES_GOLD)/d-2000;
+    !!HE(CURRENT_HERO):S(skill)/1;
+    !!VRi^simi_visited_%(x)%(y)%(z)%(heroId)^:S1;
+  !!el;
+    !!IF:M^%T(simi.sanctuary.noGold)^;
+  !!en;
+!!el&v1=2;
+  !!if&(gold)>=2000;
+    !!OW:R(CURRENT_PLAYER)/(RES_GOLD)/d-2000;
+    !!HE(CURRENT_HERO):S(skill2)/1;
+    !!VRi^simi_visited_%(x)%(y)%(z)%(heroId)^:S1;
+  !!el;
+    !!IF:M^%T(simi.sanctuary.noGold)^;
+  !!en;
+!!en;
+
+!?FU(simi_getSanctuarySkills);
+!#VA(skill:x) (skill2:x); 
+
+!!HE(CURRENT_HERO):B2/?(class:y);
+!!FU(NewIntArray):P?(newSkills:y);
+!!UN:P193/?(isWarfare:y);
+
+!!re i/(SEC_SKILL_FIRST)/(SEC_SKILL_LAST);
+  !!co&i=(SKILL_NECROMANCY);
+  !!if&(isWarfare);
+    !!co|i=(SKILL_ARTILLERY)/i=(SKILL_FIRST_AID); // skip same skills if warfare
+  !!en;
+
+  !!HE(CURRENT_HERO):Si/?(skillLv:y);
+  !!FU(shimy_HeroClass_SkillLearnability):P(class)/i/?(canLearn:y);
+  !!FU(WOG_GameMgr_Skill_isBanned):Pi/?(isBanned:y);
+
+  !!FU(Array_Push)&(skillLv)=0/(canLearn)>0/(isBanned)=0:P(newSkills)/i;
+!!en;
+
+!!FU(Array_Shuffle):P(newSkills);
+!!FU(Array_Pop):P(newSkills)/?(skill)/?(skill2);
+
+!?OB(OBJ_DEN_OF_THIEVES);
+
+!!OW:R(CURRENT_PLAYER)/(RES_GOLD)/?(gold:y);
+!!HE(CURRENT_HERO):N?(heroId:y) P?(x:y)/?(y:y)/?(z:y);
+
+!!FU&i^simi_visited_%(x)%(y)%(z)%(heroId)^=1:E;
+!!VRi^simi_duplicate^:S0; 
+
+!!FU(simi_getDenSkills):P?(skill1:y)/?(skill2:y);
+
+!!HE(CURRENT_HERO)&(skill1)>=0:S(skill1)/?(level1:y);
+!!HE(CURRENT_HERO)&(skill2)>=0:S(skill2)/?(level2:y);
+
+!!VR(cSkill1:y):Si^simi_den1_%(x)%(y)%(z)%(heroId)^;
+!!VR(cSkill2:y):Si^simi_den2_%(x)%(y)%(z)%(heroId)^;
+
+!!if&(cSkill1)=0/(cSkill2)=0;
+  !!VR(cSkill1):S(NO_SKILL);
+  !!VR(cSkill2):S(NO_SKILL);
+!!en;
+
+!!HE(CURRENT_HERO)&(cSkill1)>=0:S(cSkill1)/?(cLevel1:y); 
+!!HE(CURRENT_HERO)&(cSkill2)>=0:S(cSkill2)/?(cLevel2:y);
+
+!!VR(skill1)&(level1)=(cLevel1):S(cSkill1);
+!!VR(skill2)&(level2)=(cLevel2):S(cSkill2);
+
+!!if&(skill1)=(skill2);
+  !!VRi^simi_duplicate^:S1; 
+  !!VRi^simi_den1_%(x)%(y)%(z)%(heroId)^:S(skill1); 
+  !!FU(simi_getDenSkills):P?(skill2)/?y99;
+!!en;
+
+!!VRi^simi_den1_%(x)%(y)%(z)%(heroId)^:S(skill1); 
+!!VRi^simi_den2_%(x)%(y)%(z)%(heroId)^:S(skill2);
+
+!!VR(picSubtype:y):S(skill1)*3 +3 +(level1);    !!VR(picSubtype2:y):S(skill2)*3 +3 +(level2);
+!!VR(picLvl:y):S(level1)+1;                     !!VR(picLvl2:y):S(level2)+1;
+
+!!if&(ERM_FLAG_IS_HUMAN);
+  !!if&(skill2)>=0;
+    !!IF:Q1/(PIC_TYPE_SEC_SKILL)/(picSubtype)/(PIC_TYPE_SEC_SKILL)/(picSubtype2)/(PIC_TYPE_RES_GOLD)/2000/(MSG_TYPE_CHOOSE_PIC_OR_CANCEL)/^%T(simi.den.msg)^;
+    !!if&v1=1;    
+      !!if&(gold)>=2000;
+        !!OW:R(CURRENT_PLAYER)/(RES_GOLD)/d-2000;
+        !!HE(CURRENT_HERO):S(skill1)/(picLvl);
+        !!VRi^simi_visited_%(x)%(y)%(z)%(heroId)^:S1;
+      !!el;
+        !!IF:M^%T(simi.den.noGold)^;
+      !!en;
+    !!el&v1=2;
+      !!if&(gold)>=2000;
+        !!OW:R(CURRENT_PLAYER)/(RES_GOLD)/d-2000;
+        !!HE(CURRENT_HERO):S(skill2)/(picLvl2);
+        !!VRi^simi_visited_%(x)%(y)%(z)%(heroId)^:S1;
+      !!el;
+        !!IF:M^%T(simi.den.noGold)^;
+      !!en;
+    !!en;
+  !!el&(skill1)>=0;
+    !!IF:Q1/(PIC_TYPE_SEC_SKILL)/(picSubtype)/(PIC_TYPE_RES_GOLD)/2000/(MSG_TYPE_QUESTION)/^%T(simi.den.msg)^;
+    !!if&1;    
+      !!if&(gold)>=2000;
+        !!OW:R(CURRENT_PLAYER)/(RES_GOLD)/d-2000;
+        !!HE(CURRENT_HERO):S(skill1)/(picLvl);
+        !!VRi^simi_visited_%(x)%(y)%(z)%(heroId)^:S1;
+      !!el;
+        !!IF:M^%T(simi.den.noGold)^;
+      !!en;
+    !!en;
+  !!el;
+    !!IF:M^%T(simi.den.noSlot)^;
+  !!en;
+!!el&(skill1)>=0;
+  !!if&(gold)>=500;
+    !!OW:R(CURRENT_PLAYER)/(RES_GOLD)/d-500;
+    !!HE(CURRENT_HERO):S(skill1)/(picLvl);
+    !!VRi^simi_visited_%(x)%(y)%(z)%(heroId)^:S1;
+  !!en;
+!!en;
+
+!IF:L^skill1:%(skill1),L1:%(level1),/skill2:%(skill2),L2:%(level2)^;
+
+!?FU(simi_getDenSkills);
+!#VA(skill1:x) (skill2:x);
+
+!!VR(skill1):S(NO_SKILL);
+!!VR(skill2):S(NO_SKILL);
+!!HE(CURRENT_HERO):N?(heroId:y) P?(x:y)/?(y:y)/?(z:y);
+
+!!FU(NewIntArray):P?(basicSkills:y) P?(advSkills:y);
+
+!!UN:P193/?(isWarfare:y);
+
+!!re i/(SEC_SKILL_FIRST)/(SEC_SKILL_LAST);
+  !!HE(CURRENT_HERO):Si/?(skillLv:y);
+
+  !!co&i^simi_duplicate^/i=i^simi_den1_%(x)%(y)%(z)%(heroId)^;
+  !!if&(isWarfare);
+    !!co|i=(SKILL_ARTILLERY)/i=(SKILL_FIRST_AID); // skip same skills if warfare
+  !!en;
+
+  !!FU(Array_Push)&(skillLv)=(SKILL_BASIC):P(basicSkills)/i;
+  !!FU(Array_Push)&(skillLv)=(SKILL_ADVANCED):P(advSkills)/i;
+!!en;
+
+!!FU(Array_Shuffle):P(basicSkills) P(advSkills);
+
+!!SN:M(basicSkills)/?(basicSize:y) M(advSkills)/?(advSize:y);
+
+!IF:L^sizeBasic%(basicSize),adv%(advSize)^;
+
+!!if&(basicSize)>0;
+  !!FU(Array_Pop):P(basicSkills)/?(skill1);
+!!el&(advSize)>0;
+  !!FU(Array_Pop):P(advSkills)/?(skill1);
+!!en;
+
+!!SN:M(basicSkills)/?(basicSize:y) M(advSkills)/?(advSize:y);
+
+!!if&(basicSize)>0;
+  !!FU(Array_Pop):P(basicSkills)/?(skill2);
+!!el&(advSize)>0;
+  !!FU(Array_Pop):P(advSkills)/?(skill2);
+!!en;
+
+!IF:L^skill1:%(skill1),skill2:%(skill2)^;
+
+!?FU(OnAdventureMapTileHint);
+
+!#VA(x:x) (y:x) (z:x);             Object entrance coordinates
+!#VA(objType:x) (objSubtype:x);    Type and subtype of object. For active hero it's object under hero.
+
+!!FU&(objType)<>(OBJ_SANCTUARY)/(objType)<>(OBJ_DEN_OF_THIEVES)/(objType)<>(OBJ_TAVERN):E;
+
+!!FU(simi_GetMapObjectString):P(x)/(y)/(z)/0/?(string:z);
+!!MM:M^%(string)^;
+
+!?FU(OnAdventureMapRightMouseClick);
+
+!!CM:P?(x:y)/?(y:y)/?(z:y);
+
+!!OB(x)/(y)/(z):T?(objType:y);
+!!FU&(objType)<>(OBJ_SANCTUARY)/(objType)<>(OBJ_DEN_OF_THIEVES)/(objType)<>(OBJ_TAVERN):E;
+
+!!FU(simi_GetMapObjectString):P(x)/(y)/(z)/1/?(string:z);
+!!CM:R0;
+!!IF:M0/(MSG_TYPE_POPUP)/^%(string)^;
+
+!?FU(simi_GetMapObjectString);
+
+!#VA(x:x) (y:x) (z:x);
+!#VA(mode:x);
+!#VA(result:x);
+
+!!OW:A(CURRENT_PLAYER)/?(heroId:y);
+!!SN:O?(x)/?(y)/?(z);
+!!OB(x)/(y)/(z):T?(objType:y);
+
+
+!!if&(mode)=0;
+  !!VR(separator:z):S^ ^;
+!!el;
+  !!VR(separator):S^%T(es.endl)%T(es.endl)^;
+!!en;
+
+!!if&(objType)=(OBJ_SANCTUARY);
+  !!VR(string:z):S^%T(simi.sanctuary.name)^;
+!!el&(objType)=(OBJ_DEN_OF_THIEVES);
+  !!VR(string:z):S^%T(simi.den.name)^;
+!!el&(objType)=(OBJ_TAVERN);
+  !!VR(string:z):S^%T(simi.tavern.name)^;
+!!en;
+
+!!if&i^simi_visited_%(x)%(y)%(z)%(heroId)^;
+  !!VR(string:z):+^%(separator)%T(es.visited)^;
+!!el;
+  !!VR(string):+^%(separator)%T(es.notVisited)^;
+!!en;
+!!VR(result):Z(string);
+

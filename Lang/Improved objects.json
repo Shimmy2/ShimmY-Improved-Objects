@@ -1,0 +1,21 @@
+    "simi": {
+        "sanctuary": {
+            "name": "Sanctuary",
+            "msg": "A group of wise monks greets you solemnly. They offer to share their knowledge of the arts of war and wisdom. For a donation of 2000 gold, they will teach you a new secondary skill of your choosing.",
+            "noGold": "The monks listen to your request but shake their heads. Their teachings require a donation of 2000 gold, and you do not possess enough.",
+            "noSlot": "The monks are prepared to teach you new skills, but your have already learned the maximum number of secondary skills.",
+        },
+        "den": {
+            "name": "Den of Thieves",
+            "msg": "The thieves gather around you, whispering among themselves. For a fee of 2000 gold, they offer to train you in one of your secondary skills.",
+            "noGold": "The thieves sneer at your offer. Their services require 2000 gold, and you do not have enough.",
+            "noSlot": "The thieves study you carefully, then nod. You have mastered all your skills, there is nothing more they can teach you.",
+        },
+        "tavern": {
+            "name": "Tavern",
+            "msg": "As you sit down, an old wizard shares some forgotten arcane secrets with you.",
+            "book": "To learn spells, your hero must first buy a spell book for 500 gold. Do you wish to buy one?",
+            "noGold": "An old wizard offers to teach you forgotten arcane secrets but you must first buy a spell book for 500 gold. Unfortunately, you seem to be a little short of cash at the moment.",
+        },
+    }
+}
