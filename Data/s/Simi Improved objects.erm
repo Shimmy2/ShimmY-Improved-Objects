@@ -337,7 +337,7 @@ ZVSE2
 !!if&(mode)=0;
   !!VR(separator:z):S^ ^;
 !!el;
-  !!VR(separator):S^%T(es.endl)%T(es.endl)^;
+  !!VR(separator):S^%T(simi.string.endl)^;
 !!en;
 
 !!if&(objType)=(OBJ_SANCTUARY);
