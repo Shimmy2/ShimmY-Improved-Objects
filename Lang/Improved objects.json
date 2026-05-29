@@ -17,5 +17,8 @@
             "book": "To learn spells, your hero must first buy a spell book for 500 gold. Do you wish to buy one?",
             "noGold": "An old wizard offers to teach you forgotten arcane secrets but you must first buy a spell book for 500 gold. Unfortunately, you seem to be a little short of cash at the moment.",
         },
+        "string": {
+            "endl": "\n\n",
+        },
     }
 }
